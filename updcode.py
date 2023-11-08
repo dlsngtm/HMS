@@ -24,10 +24,10 @@ cursor = mydb.cursor()
 # Function to insert a new user into the database during signup
 
 
-def insert_users_into_db(username, email, password):
+def insert_users_into_db(full_name, age, sex, email, password):
     try:
-        query = "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)"
-        cursor.execute(query, (username, email, password))
+        query = "INSERT INTO users (full_name, age, sex, email, password) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(query, (full_name, age, sex, email, password))
         mydb.commit()
         return True
     except Exception as e:
@@ -146,14 +146,27 @@ def create_login_box(event=None):
 
 
 def create_signup_box():
-    global username_entry, email_entry, password_entry, signup_box
+    global full_name_entry, age_entry, sex_var, email_entry, password_entry, signup_box
     signup_box = tk.Frame(root, borderwidth=2, relief="ridge", padx=10, pady=10)
     signup_box.pack(padx=20, pady=20)
 
-    username_label = tk.Label(signup_box, text="Username:", anchor="w")
-    username_label.pack()
-    username_entry = tk.Entry(signup_box)
-    username_entry.pack(fill="x", padx=10, pady=5)
+    full_name_label = tk.Label(signup_box, text="Full Name:", anchor="w")
+    full_name_label.pack()
+    full_name_entry = tk.Entry(signup_box)
+    full_name_entry.pack(fill="x", padx=10, pady=5)
+
+    age_label = tk.Label(signup_box, text="Age:", anchor="w")
+    age_label.pack()
+    age_entry = tk.Entry(signup_box)
+    age_entry.pack(fill="x", padx=10, pady=5)
+
+    sex_label = tk.Label(signup_box, text="Sex:", anchor="w")
+    sex_label.pack()
+    sex_var = tk.StringVar(value="Male")
+    sex_radio_male = tk.Radiobutton(signup_box, text="Male", variable=sex_var, value="Male")
+    sex_radio_female = tk.Radiobutton(signup_box, text="Female", variable=sex_var, value="Female")
+    sex_radio_male.pack()
+    sex_radio_female.pack()
 
     email_label = tk.Label(signup_box, text="Email Address:", anchor="w")
     email_label.pack()
@@ -246,17 +259,21 @@ def login():
 
 
 def signup():
-    global username_entry, email_entry, password_entry
-    username = username_entry.get()
+    global full_name, age, sex
+    full_name = full_name_entry.get()
+    age = age_entry.get()
+    sex = sex_var.get()
     email = email_entry.get()
     password = password_entry.get()
-    if username and email and password:
-        if insert_users_into_db(username, email, password):
+    if full_name and age and sex and email and password:
+        if insert_users_into_db(full_name, age, sex, email, password):
             messagebox.showinfo("Signup Successful", "Account created successfully!")
+            create_appointment_window()
         else:
             messagebox.showerror("Signup Failed", "Failed to create an account. Please try again.")
     else:
-        messagebox.showerror("Invalid Information", "Please fill in all the informations needed.")
+        messagebox.showerror("Invalid Information", "Please fill in all the information needed.")
+
 
 # Initialize the admin login state
 
@@ -656,7 +673,7 @@ def show_main_window():
 
 root = tk.Tk()
 root.geometry("700x500")
-root.title("Hospital Management System")
+root.title("TCNR's Hospital Management System")
 
 
 # Load and display the background image
@@ -669,7 +686,7 @@ background_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 
 label = tk.Label(root,
-                 text="Hospital Management System",
+                 text="TCNR's Hospital Management System",
                  font=("Times", "24", "bold"),
                  fg="red",
                  )
