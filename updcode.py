@@ -90,7 +90,7 @@ def get_appointments_for_doctor(doctor_id):
 def save_appointment_to_database(appointment_info):
     try:
         # Reformat the appointment date to match the expected format ("%Y-%m-%d")
-        appointment_date = datetime.strptime(appointment_info["Appointment Date"], "%y/%m/%d")
+        appointment_date = datetime.strptime(appointment_info["Appointment Date"], "%Y-%m-%d")
         formatted_appointment_date = appointment_date.strftime("%Y-%m-%d")
 
         
@@ -362,8 +362,12 @@ def appointment_window():
         sex = sex_var.get()
         selected_doctor = doctor_var.get()
         selected_slot = slot_var.get()
-        appointment_date = date_entry.get_date()
+        appointment_date_str = date_entry.get_date()
         selected_reason = reasons_var.get()
+
+        # Convert appointment_date_str from '11/10/23' to '%Y-%m-%d' format
+        appointment_date_obj = datetime.strptime(appointment_date_str, '%m/%d/%y')
+        formatted_appointment_date = appointment_date_obj.strftime('%Y-%m-%d')
 
         # Initialize amount with a default value
         amount = "Unknown"
@@ -373,18 +377,18 @@ def appointment_window():
         elif selected_reason == "Medication":
             amount = "1,200 pesos"
 
-        if patient_name and age and contact_number and appointment_date:
+        if patient_name and age and contact_number and formatted_appointment_date:
             appointment_info = {
                 "Name": patient_name,
                 "Age": age,
                 "Contact Number": contact_number,
                 "Sex": sex,
                 "Doctor": selected_doctor,
-                "Appointment Date": appointment_date,
+                "Appointment Date": formatted_appointment_date,
                 "Appointment Time": selected_slot,
                 "Reason": selected_reason,
                 "Amount": amount
-            }  
+            }    
 
             # Call the function to save the appointment to the database
             if save_appointment_to_database(appointment_info):
